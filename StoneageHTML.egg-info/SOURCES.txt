@@ -12,6 +12,5 @@ StoneageHTML.egg-info/paster_plugins.txt
 StoneageHTML.egg-info/requires.txt
 StoneageHTML.egg-info/top_level.txt
 StoneageHTML.egg-info/zip-safe
-src/stoneagehtml/__init__.py
-src/stoneagehtml/stoneagehtml.py
 stoneagehtml/__init__.py
+stoneagehtml/stoneagehtml.py

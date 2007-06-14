@@ -29,7 +29,7 @@ setup(name="StoneageHTML",
             packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
       zip_safe=True,
-      url='',
+      url='https://dev.serverzen.com/svn/public/projects/stoneagehtml',
       install_requires=['BeautifulSoup', 'cssutils'
       ],
       entry_points="""
