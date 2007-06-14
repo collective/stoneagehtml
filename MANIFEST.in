@@ -1,0 +1,5 @@
+include MANIFEST
+include MANIFEST.in
+include setup.py
+include *.txt
+recursive-include src *.py

@@ -1,0 +1,19 @@
+Metadata-Version: 1.0
+Name: StoneageHTML
+Version: 0.1
+Summary: Stone-Age HTML Filter: prepare documents for e-mail distribution.
+Home-page: UNKNOWN
+Author: Malthe Borch
+Author-email: mborch@mborch.com
+License: http://www.gnu.org/copyleft/lesser.html
+Description: UNKNOWN
+Platform: any
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Internet
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Text Processing :: Markup :: HTML

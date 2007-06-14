@@ -1,0 +1,7 @@
+LICENSE.txt
+MANIFEST
+MANIFEST.in
+README.txt
+setup.py
+src/stoneagehtml/__init__.py
+src/stoneagehtml/stoneagehtml.py

@@ -1,0 +1,17 @@
+LICENSE.txt
+MANIFEST
+MANIFEST.in
+README.txt
+setup.cfg
+setup.py
+StoneageHTML.egg-info/PKG-INFO
+StoneageHTML.egg-info/SOURCES.txt
+StoneageHTML.egg-info/dependency_links.txt
+StoneageHTML.egg-info/entry_points.txt
+StoneageHTML.egg-info/paster_plugins.txt
+StoneageHTML.egg-info/requires.txt
+StoneageHTML.egg-info/top_level.txt
+StoneageHTML.egg-info/zip-safe
+src/stoneagehtml/__init__.py
+src/stoneagehtml/stoneagehtml.py
+stoneagehtml/__init__.py
