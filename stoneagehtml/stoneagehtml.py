@@ -279,7 +279,8 @@ class CompactifyingSoup(BeautifulSoup):
         if match:
             for p, v in match.groupdict().items():
                 aggregate_property = '-'.join((prop,p))
-                style.setProperty(aggregate_property, v, priority=important)
+                if v is not None:
+                    style.setProperty(aggregate_property, v, priority=important)
         else:
             style.setProperty(prop, value)
     
