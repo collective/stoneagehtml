@@ -18,7 +18,7 @@ import sys, os
 doclines = __doc__.split("\n")
 
 setup(name="StoneageHTML",
-      version="0.1",
+      version="0.1.1",
       maintainer="Malthe Borch",
       maintainer_email="mborch@mborch.com",
       license = "http://www.gnu.org/copyleft/lesser.html",
@@ -26,7 +26,7 @@ setup(name="StoneageHTML",
       description = doclines[0],
       classifiers = filter(None, classifiers.split("\n")),
       long_description = "\n".join(doclines[2:]),
-            packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+      packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
       include_package_data=True,
       zip_safe=True,
       url='https://dev.serverzen.com/svn/public/projects/stoneagehtml',
