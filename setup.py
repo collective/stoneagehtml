@@ -18,7 +18,7 @@ import sys, os
 doclines = __doc__.split("\n")
 
 setup(name="StoneageHTML",
-      version="0.1.3",
+      version="0.1.5",
       maintainer="Malthe Borch",
       maintainer_email="mborch@gmail.com",
       license = "http://www.gnu.org/copyleft/lesser.html",
