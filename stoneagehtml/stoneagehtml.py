@@ -197,6 +197,10 @@ class CompactifyingSoup(BeautifulSoup):
 
         style_defs = self.findAll('style')
         for style_def in style_defs:
+            # assert non-empty
+            if not style_def.contents:
+                continue
+            
             style = style_def.contents[0]
 
             # remove unused rules
