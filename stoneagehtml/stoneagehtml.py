@@ -148,7 +148,7 @@ class CompactifyingSoup(BeautifulSoup):
         >>> print compactify(text, filter_tags=False)
         <BLANKLINE>
         <html>
-        <head><style></style></head>
+        <head></head>
         <body>
         <div id=\"a\" style=\"margin: 0\">
         <span class=\"b c\" style=\"padding: 0; background-color: white !important; background-position: bottom left !important; background-image: url(text.gif) !important; background-repeat: no-repeat !important; background-attachment: fixed !important; display: block\">test</span>
