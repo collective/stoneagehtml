@@ -53,7 +53,7 @@ tag_blacklist=['visibility',
                'background-image', 'background-repeat', 'background-position']
 
 import logging
-cssutils.log.setloglevel(logging.CRITICAL)
+cssutils.log.setLevel(logging.CRITICAL)
 
 def trim_dictionary(d):
     for key, value in d.items():
