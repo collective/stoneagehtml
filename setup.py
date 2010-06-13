@@ -1,38 +1,40 @@
-"""Stone-Age HTML Filter: prepare documents for e-mail distribution."""
-
-classifiers = """\
-Development Status :: 4 - Beta
-Environment :: Web Environment
-Intended Audience :: Developers
-License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)
-Operating System :: OS Independent
-Programming Language :: Python
-Topic :: Internet
-Topic :: Software Development :: Libraries :: Python Modules
-Topic :: Text Processing :: Markup :: HTML
-"""
-
 from setuptools import setup, find_packages
-import sys, os
+import os
 
-doclines = __doc__.split("\n")
+version = '0.2dev'
 
-setup(name="StoneageHTML",
-      version="0.1.5",
-      maintainer="Malthe Borch",
-      maintainer_email="mborch@gmail.com",
-      license = "http://www.gnu.org/copyleft/lesser.html",
-      platforms = ["any"],
-      description = doclines[0],
-      classifiers = filter(None, classifiers.split("\n")),
-      long_description = "\n".join(doclines[2:]),
-      packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+setup(name='StoneageHTML',
+      version=version,
+      description="Stone-Age HTML Filter: prepare documents for e-mail distribution",
+      long_description=open("README.txt").read() + "\n" +
+                       open(os.path.join("docs", "HISTORY.txt")).read(),
+      # Get more strings from http://pypi.python.org/pypi?:action=list_classifiers
+      classifiers=[
+        "Development Status :: 4 - Beta",
+        "Environment :: Web Environment",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: GNU Library or Lesser General Public License (LGPL)",
+        "Operating System :: OS Independent",
+        "Programming Language :: Python",
+        "Topic :: Internet",
+        "Topic :: Software Development :: Libraries :: Python Modules",
+        "Topic :: Text Processing :: Markup :: HTML",
+        ],
+      keywords='mail css',
+      author='Malthe Borch',
+      author_email='mborch@gmail com',
+      maintainer="Johannes Raggam",
+      maintainer_email="raggam-nl@adm.at",
+      url='http://github.com/thet/stoneagehtml',
+      license='LGPL - http://www.gnu.org/copyleft/lesser.html',
+      packages=find_packages(exclude=['ez_setup']),
+      namespace_packages=['collective'],
       include_package_data=True,
       zip_safe=False,
-      url='https://dev.serverzen.com/svn/public/projects/stoneagehtml',
-      install_requires=['BeautifulSoup', 'cssutils'
+      install_requires=[
+          'setuptools',
+          'BeautifulSoup',
+          'cssutils'
       ],
-      entry_points="""
-      # -*- Entry points: -*-
-      """,
+      extras_require = dict(test = ['interlude',],),
       )

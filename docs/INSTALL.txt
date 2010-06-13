@@ -1,0 +1,30 @@
+StoneageHTML Installation
+----------------------------------
+
+To install StoneageHTML into the global Python environment (or a workingenv),
+using a traditional Zope 2 instance, you can do this:
+
+* When you're reading this you have probably already run
+  ``easy_install stoneagehtml``. Find out how to install setuptools
+  (and EasyInstall) here:
+  http://peak.telecommunity.com/DevCenter/EasyInstall
+
+
+Alternatively, if you are using zc.buildout recipe to manage your project, you
+can do this:
+
+* Add ``stoneagehtml`` to the list of eggs to install, e.g.:
+
+    [buildout]
+    ...
+    eggs =
+        ...
+        stoneagehtml
+
+
+* Re-run buildout, e.g. with:
+
+    $ ./bin/buildout
+
+You can skip the ZCML slug if you are going to explicitly include the package
+from another package's configure.zcml file.
