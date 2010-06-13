@@ -237,7 +237,7 @@ class CompactifyingSoup(BeautifulSoup):
                                            tag.attrs)
 
                 # remove inline style-declarations
-                style_def.contents[0].replaceWith('')
+                style_def.extract()
 
         return self.renderContents()
 
