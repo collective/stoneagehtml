@@ -22,7 +22,7 @@ Stone-Age HTML Filter: prepare documents for e-mail distribution.
 usage:
 
   stoneagehtml.compactify(text)
- 
+
   (see function def for details)
 
 """
@@ -74,7 +74,7 @@ def tagQuery(tag, tag_name, attrs):
 
     if tag_name and tag_name != tag.name:
         return False
-    
+
     for key, value in attrs.items():
         tag_attribute_value = find_attribute(key, tag.attrs)
         if not tag_attribute_value:
@@ -101,7 +101,7 @@ class CompactifyingSoup(BeautifulSoup):
                    expand_css_properties=True, # experimental
                    remove_classnames_and_ids=False,
                    media=(u'screen',)):
-        
+
         """
         This function processes an HTML-soup with two purposes:
 
@@ -110,9 +110,9 @@ class CompactifyingSoup(BeautifulSoup):
 
         * Degrades the markup detail to provide compatibility with browsers
           and interface which do not support the full CSS ruleset.
-        
+
         This is demonstrated below.
-        
+
         >>> text = \"""
         ... <html>
         ... <head><style>
@@ -122,7 +122,7 @@ class CompactifyingSoup(BeautifulSoup):
         ... div.b { padding: 1em }
         ... @media screen { div.a { top: 0 }}
         ... .c { background: white url(text.gif) no-repeat fixed bottom left !important }
-        ... .d { background: url(text.gif) repeat-x 2px -8px }        
+        ... .d { background: url(text.gif) repeat-x 2px -8px }
         ... #a span { display: block }
         ... .a span { display: none }
         ... </style></head>
@@ -134,7 +134,7 @@ class CompactifyingSoup(BeautifulSoup):
         ... </div>
         ... </body>
         ... </html>\"""
-        
+
         >>> print compactify(text, filter_tags=False)
         <BLANKLINE>
         <html>
@@ -147,7 +147,7 @@ class CompactifyingSoup(BeautifulSoup):
         </div>
         </body>
         </html>
-        
+
         """
 
         # save arguments
@@ -173,9 +173,9 @@ class CompactifyingSoup(BeautifulSoup):
                         # store abbr. identifier in dictionary
                         self.classes[name] = short_name
                         count += 1
-                        
+
                         short_names.append(short_name)
-                        
+
                 if abbreviation_enabled:
                     tag['class'] = ' '.join(short_names)
 
@@ -189,7 +189,7 @@ class CompactifyingSoup(BeautifulSoup):
                         # store abbr. identifier in dictionary
                         self.identifiers[name] = short_name
                         count += 1
-                    
+
                     short_names.append(short_name)
 
                 if abbreviation_enabled:
@@ -200,42 +200,42 @@ class CompactifyingSoup(BeautifulSoup):
             # assert non-empty
             if not style_def.contents:
                 continue
-            
+
             style = style_def.contents[0]
 
             # remove unused rules
             sheet = cssutils.parseString(style)
             sheet.cssRules = self.filterCSSDeclarations(sheet.cssRules)
             style = sheet.cssText
-        
+
             # convert identifiers
             if abbreviation_enabled:
                 for name, short_name in self.classes.items():
                     style = style.replace('.%s ' % name, '.%s ' % short_name)
                     style = style.replace('.%s.' % name, '.%s.' % short_name)
                     style = style.replace('.%s,' % name, '.%s,' % short_name)
-                
+
                 for name, short_name in self.identifiers.items():
                     style = style.replace('#%s ' % name, '#%s ' % short_name)
                     style = style.replace('#%s.' % name, '#%s.' % short_name)
                     style = style.replace('#%s,' % name, '#%s,' % short_name)
-                
+
             style_def.contents[0].replaceWith(style)
 
             if styles_in_tags:
                 # distribute styles
                 for rule in sheet.cssRules:
                     self.distributeCSSDeclaration(rule)
-                    
+
                 # remove class names and identifiers from tags
                 if remove_classnames_and_ids:
                     for tag in self.findAll():
                         tag.attrs = filter(lambda (key, value): key not in ('class', 'id'),
                                            tag.attrs)
-                    
+
                 # remove inline style-declarations
                 style_def.contents[0].replaceWith('')
-                
+
         return self.renderContents()
 
     def distributeCSSDeclaration(self, rule):
@@ -262,7 +262,7 @@ class CompactifyingSoup(BeautifulSoup):
                 for match in regex_selector.finditer(selector.selectorText):
                     if not match.group(0):
                         continue
-                
+
                     selectors.append(
                         (match.group(1), trim_dictionary({'class': match.group(5),
                                                           'id': match.group(3)})))
@@ -287,7 +287,7 @@ class CompactifyingSoup(BeautifulSoup):
                     style.setProperty(aggregate_property, v, priority=important)
         else:
             style.setProperty(prop, value)
-    
+
     def distributeCSSRule(self, rule, basetag, selectors):
         tag_name, attrs = selectors[0]
         tags = basetag.findAll(lambda tag: tagQuery(tag, tag_name, attrs))
@@ -307,9 +307,9 @@ class CompactifyingSoup(BeautifulSoup):
                         # check if property is in expand list
                         if prop in regex_tags.keys():
                             self.expandProperty(rule.style, prop)
-                            
+
                         i += 1
-                
+
                 # filter out blacklisted properties
                 if self.filter_tags:
                     i = 0
@@ -339,13 +339,13 @@ class CompactifyingSoup(BeautifulSoup):
 
                 if style:
                     attrs.append(('style', style))
-            
+
     def filterCSSDeclarations(self, cssRules):
         rules = []
         for rule in cssRules:
             if isinstance(rule, cssutils.css.CSSComment):
                 continue
-        
+
             if isinstance(rule, cssutils.css.CSSMediaRule):
                 filtered_rules = self.filterCSSDeclarations(rule.cssRules)
 
@@ -357,10 +357,10 @@ class CompactifyingSoup(BeautifulSoup):
                         rule.deleteRule(i)
                     else:
                         i += 1
-                    
+
                 rules.append(rule)
                 continue
-        
+
             # only include rules with at least one used selector
             try:
                 selector_list = self.filterCSSDeclaration(rule)
@@ -369,8 +369,8 @@ class CompactifyingSoup(BeautifulSoup):
 
             if len(selector_list):
                 rule.selectorList = selector_list
-                rules.append(rule)            
-            
+                rules.append(rule)
+
         return rules
 
     def filterCSSDeclaration(self, rule):
@@ -378,7 +378,7 @@ class CompactifyingSoup(BeautifulSoup):
         for selector in rule.selectorList:
             # remove unused selectors
             iterator = regex_selector_id.finditer(selector.selectorText)
-            
+
             add = True
             for match in iterator:
                 s = match.group(1)
