@@ -36,5 +36,4 @@ setup(name='StoneageHTML',
           'BeautifulSoup',
           'cssutils'
       ],
-      extras_require = dict(test = ['interlude',],),
       )
