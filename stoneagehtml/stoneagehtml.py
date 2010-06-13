@@ -215,6 +215,10 @@ class CompactifyingSoup(BeautifulSoup):
 
             # remove unused rules
             sheet = cssutils.parseString(style)
+            ### INFO: workaround of bug:
+            ### http://code.google.com/p/cssutils/issues/detail?id=39
+            ### TODO: after bugfix restore to easier to read:
+            # sheet.cssRules = self.filterCSSDeclarations(sheet.cssRules)
             filtered_cssrules = self.filterCSSDeclarations(sheet.cssRules)
             del sheet.cssRules[:]
             for fcss in filtered_cssrules:
