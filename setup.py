@@ -28,7 +28,6 @@ setup(name='StoneageHTML',
       url='http://github.com/thet/stoneagehtml',
       license='LGPL - http://www.gnu.org/copyleft/lesser.html',
       packages=find_packages(exclude=['ez_setup']),
-      namespace_packages=['collective'],
       include_package_data=True,
       zip_safe=False,
       install_requires=[
