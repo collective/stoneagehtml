@@ -255,8 +255,8 @@ class CompactifyingSoup(BeautifulSoup):
             if not valid_media:
                 return
 
-            for r in rule.cssRules:
-                self.distributeCSSDeclaration(r)
+            for rul in rule.cssRules:
+                self.distributeCSSDeclaration(rul)
         else:
             for selector in rule.selectorList:
                 # create selector datastructure
