@@ -205,7 +205,10 @@ class CompactifyingSoup(BeautifulSoup):
 
             # remove unused rules
             sheet = cssutils.parseString(style)
-            sheet.cssRules = self.filterCSSDeclarations(sheet.cssRules)
+            filtered_cssrules = self.filterCSSDeclarations(sheet.cssRules)
+            del sheet.cssRules[:]
+            for fcss in filtered_cssrules:
+                sheet.cssRules.append(fcss)
             style = sheet.cssText
 
             # convert identifiers
