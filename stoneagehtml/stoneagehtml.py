@@ -247,9 +247,8 @@ class CompactifyingSoup(BeautifulSoup):
         elif isinstance(rule, cssutils.css.CSSMediaRule):
             # verify that media is valid
             valid_media = False
-
-            for m in rule.media:
-                if m in self.media or m == 'all':
+            for med in rule.media:
+                if med.mediaText in self.media or med.mediaText == 'all':
                     valid_media = True
                     break
 
