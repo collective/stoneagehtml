@@ -33,7 +33,7 @@ import re
 
 # regex: selectors
 regex_selector_id = re.compile('((?:\.|#)[\w\-_]+)')
-regex_selector = re.compile('(\w+)?(#([\w\-_]+))?(\.([\w\-_]+))?')
+regex_selector = re.compile('(\w+)?(#([\w\-_]+))?(\.([\w\-_]+))?(\*)?')
 
 # regex: compound css-tags
 regex_tags = {'background': re.compile('^ *((?!url)(?P<color>[#\w]+))? *((?P<image>url *\([^\)]+\)) *'+
