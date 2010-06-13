@@ -55,6 +55,16 @@ tag_blacklist=['visibility',
 import logging
 cssutils.log.setLevel(logging.CRITICAL)
 
+# CSSUTILS PREFERENCES
+cssutils.ser.prefs.keepAllProperties = False
+cssutils.ser.prefs.keepComments = False
+cssutils.ser.prefs.keepEmptyRules = False
+cssutils.ser.prefs.keepUnknownAtRules = False
+cssutils.ser.prefs.keepUsedNamespaceRulesOnly = True
+cssutils.ser.prefs.resolveVariables = True
+cssutils.ser.prefs.validOnly = True
+
+
 def trim_dictionary(d):
     for key, value in d.items():
         if not value:
