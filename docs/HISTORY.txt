@@ -1,10 +1,11 @@
 Changelog
 =========
 
-0.3 (unreleased)
+0.2.1 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Missing 'docs' directory added. Fixes broken egg.
+  [thet]
 
 
 0.2 (2010-06-13)
