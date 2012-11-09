@@ -110,7 +110,9 @@ class CompactifyingSoup(BeautifulSoup):
                    filter_tags=True,
                    expand_css_properties=True, # experimental
                    remove_classnames_and_ids=False,
-                   media=(u'screen',)):
+                   media=(u'screen',),
+                   remove_inline_style=True # very experimental if set to False
+                   ):
 
         """
         This function processes an HTML-soup with two purposes:
@@ -157,6 +159,65 @@ class CompactifyingSoup(BeautifulSoup):
         </div>
         </body>
         </html>
+
+        Additional feature "remove_inline_style" with the following 
+        purpose:
+
+        * Media query are often used for responsive newsletters. Now
+          it starts to be quit insane because we need to keep the inline 
+          tags at least for the styles marked with "@media only screen".
+          The long story: http://goo.gl/3Ql2p
+        
+        Lets demonstrate it, recall that "@media screen" is per default 
+        added to the markup: 
+
+        >>> text = \"""
+        ... <html>
+        ... <head><style>
+        ... span.b { padding: 1em }
+        ... @media only screen and (max-width: 480px){ span.b { padding: 0 }}
+        ... div.d { padding: 1em }
+        ... @media screen { div#a { padding: 1em } }
+        ... </style></head>
+        ... <body>
+        ... <div id='a'>
+        ...   <span class='b c'>test</span>
+        ...   <div class='d'><!-- nothing here --></div>
+        ...   <span>test</span>
+        ... </div>
+        ... </body>
+        ... </html>\"""
+
+        >>> print compactify(text, filter_tags=False, remove_inline_style=False)
+        <BLANKLINE>
+        <html>
+        <head><style>span.b {
+            padding: 1em
+            }
+        @media only screen and (max-width: 480px) {
+            span.b {
+                padding: 0
+                }
+            }
+        div.d {
+            padding: 1em
+            }
+        @media screen {
+            div#a {
+                padding: 1em
+                }
+            }</style></head>
+        <body>
+        <div id="a" style="padding: 1em">
+        <span class="b c" style="padding: 1em">test</span>
+        <div class="d" style="padding: 1em"><!-- nothing here --></div>
+        <span>test</span>
+        </div>
+        </body>
+        </html>
+
+        Niecetohave: Filter the inline styles in the header only
+        to contain "@media only screen" styles.
 
         """
 
@@ -224,7 +285,6 @@ class CompactifyingSoup(BeautifulSoup):
             for fcss in filtered_cssrules:
                 sheet.cssRules.append(fcss)
             style = sheet.cssText
-
             # convert identifiers
             if abbreviation_enabled:
                 for name, short_name in self.classes.items():
@@ -249,9 +309,10 @@ class CompactifyingSoup(BeautifulSoup):
                     for tag in self.findAll():
                         tag.attrs = filter(lambda (key, value): key not in ('class', 'id'),
                                            tag.attrs)
-
+                
                 # remove inline style-declarations
-                style_def.extract()
+                if (remove_inline_style):
+                    style_def.extract()
 
         return self.renderContents()
 
