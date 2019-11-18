@@ -27,7 +27,7 @@ usage:
 
 """
 
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 import cssutils
 import re
 
@@ -170,7 +170,7 @@ class CompactifyingSoup(BeautifulSoup):
 
         # optimize class identifiers
         count = 0
-        for tag in self.findAll():
+        for tag in self.find_all():
             class_def = tag.get('class', None)
             id_def = tag.get('id', None)
             if class_def:
@@ -205,7 +205,7 @@ class CompactifyingSoup(BeautifulSoup):
                 if abbreviation_enabled:
                     tag['id'] = ' '.join(short_names)
 
-        style_defs = self.findAll('style')
+        style_defs = self.find_all('style')
         for style_def in style_defs:
             # assert non-empty
             if not style_def.contents:
@@ -237,7 +237,7 @@ class CompactifyingSoup(BeautifulSoup):
                     style = style.replace('#%s.' % name, '#%s.' % short_name)
                     style = style.replace('#%s,' % name, '#%s,' % short_name)
 
-            style_def.contents[0].replaceWith(style)
+            style_def.contents[0].replace_with(style)
 
             if styles_in_tags:
                 # distribute styles
@@ -246,14 +246,14 @@ class CompactifyingSoup(BeautifulSoup):
 
                 # remove class names and identifiers from tags
                 if remove_classnames_and_ids:
-                    for tag in self.findAll():
+                    for tag in self.find_all():
                         tag.attrs = filter(lambda (key, value): key not in ('class', 'id'),
                                            tag.attrs)
 
                 # remove inline style-declarations
                 style_def.extract()
 
-        return self.renderContents()
+        return self.encode_contents()
 
     def distributeCSSDeclaration(self, rule):
         if isinstance(rule, cssutils.css.CSSComment):
@@ -306,7 +306,7 @@ class CompactifyingSoup(BeautifulSoup):
 
     def distributeCSSRule(self, rule, basetag, selectors):
         tag_name, attrs = selectors[0]
-        tags = basetag.findAll(lambda tag: tagQuery(tag, tag_name, attrs))
+        tags = basetag.find_all(lambda tag: tagQuery(tag, tag_name, attrs))
 
         # walk down all matching paths
         for tag in tags:

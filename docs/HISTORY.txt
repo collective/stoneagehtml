@@ -1,8 +1,15 @@
 Changelog
 =========
 
-0.2.1 (unreleased)
+0.3 (unreleased)
 ----------------
+
+- Ported to BeautifulSoup4.
+  [reinhardt]
+
+
+0.2.1 (2010-06-14)
+------------------
 
 - Missing 'docs' directory added. Fixes broken egg.
   [thet]
