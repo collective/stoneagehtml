@@ -345,16 +345,18 @@ class CompactifyingSoup(BeautifulSoup):
 
                 # apply to tags
                 attrs = tag.attrs
-                for i in range(len(attrs)):
-                    attr, value = attrs[i]
-                    if attr.lower() == 'style':
-                        if style:
-                            attrs[i] = ('style', '%s; %s' % (value, style))
-                            style = None
+                style_key = ""
+                for key in attrs:
+                    if key.lower() == 'style':
+                        style_key = key
                         break
 
+                if style_key:
+                    attrs[style_key] = '%s; %s' % (attrs[style_key], style)
+                    style = None
+
                 if style:
-                    attrs.append(('style', style))
+                    attrs["style"] = style
 
     def filterCSSDeclarations(self, cssRules):
         rules = []
