@@ -1,1 +1,1 @@
-from stoneagehtml import compactify
+from .stoneagehtml import compactify

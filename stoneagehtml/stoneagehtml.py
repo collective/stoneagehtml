@@ -28,8 +28,12 @@ usage:
 """
 
 from bs4 import BeautifulSoup
+
 import cssutils
+import logging
 import re
+import warnings
+
 
 # regex: selectors
 regex_selector_id = re.compile('((?:\.|#)[\w\-_]+)')
@@ -52,7 +56,6 @@ tag_blacklist=['visibility',
                'position',
                'background-image', 'background-repeat', 'background-position']
 
-import logging
 cssutils.log.setLevel(logging.CRITICAL)
 
 # CSSUTILS PREFERENCES
@@ -64,7 +67,6 @@ cssutils.ser.prefs.keepUsedNamespaceRulesOnly = True
 cssutils.ser.prefs.resolveVariables = True
 cssutils.ser.prefs.validOnly = True
 
-
 def trim_dictionary(d):
     for key, value in d.items():
         if not value:
@@ -72,33 +74,38 @@ def trim_dictionary(d):
 
     return d
 
-def find_attribute(key, attrs):
-    for k, v in attrs:
-        if key == k: return v
 
-    return None
+def find_attribute(key, attrs):
+    """ In BeautifulSoup 4 attrs are a dictionary
+    """
+    warnings.warn("deprecated", DeprecationWarning)
+    return attrs.get(key)
+
 
 def tagQuery(tag, tag_name, attrs):
     """Custom tag matcher. Takes into account that tags can
     have several classes."""
-
     if tag_name and tag_name != tag.name:
         return False
 
     for key, value in attrs.items():
-        tag_attribute_value = find_attribute(key, tag.attrs)
+        tag_attribute_value = tag.attrs.get(key)
         if not tag_attribute_value:
             return False
 
-        if value in tag_attribute_value.split():
+        if not isinstance(tag_attribute_value, list):
+            tag_attribute_value = tag_attribute_value.split()
+        if value in tag_attribute_value:
             continue
 
         return False
 
     return True
 
+
 def compactify(text, *args, **kwargs):
-    return CompactifyingSoup(text).compactify(*args, **kwargs)
+    return CompactifyingSoup(text, features="html.parser").compactify(*args, **kwargs)
+
 
 class CompactifyingSoup(BeautifulSoup):
     class_prefix = 'c'
@@ -144,8 +151,7 @@ class CompactifyingSoup(BeautifulSoup):
         ... </div>
         ... </body>
         ... </html>\"""
-
-        >>> print compactify(text, filter_tags=False)
+        >>> print(compactify(text, filter_tags=False))
         <BLANKLINE>
         <html>
         <head></head>
@@ -158,6 +164,18 @@ class CompactifyingSoup(BeautifulSoup):
         </body>
         </html>
 
+        >>> print(compactify(text, filter_tags=False, remove_classnames_and_ids=True))
+        <BLANKLINE>
+        <html>
+        <head></head>
+        <body>
+        <div style=\"margin: 0\">
+        <span style=\"padding: 0; background-color: white !important; background-position: bottom left !important; background-image: url(text.gif) !important; background-repeat: no-repeat !important; background-attachment: fixed !important; display: block\">test</span>
+        <div style=\"background-position: 2px -8px; background-image: url(text.gif); background-repeat: repeat-x\"><!-- nothing here --></div>
+        <span style=\"display: block\">test</span>
+        </div>
+        </body>
+        </html>
         """
 
         # save arguments
@@ -176,7 +194,7 @@ class CompactifyingSoup(BeautifulSoup):
             if class_def:
                 # convert class-identifiers to abbreviated versions
                 short_names = []
-                for c in class_def.split(' '):
+                for c in class_def:
                     name = c.strip()
                     short_name = self.classes.get(name, "%s%s" % (self.class_prefix, count))
                     if not name in self.classes:
@@ -247,8 +265,8 @@ class CompactifyingSoup(BeautifulSoup):
                 # remove class names and identifiers from tags
                 if remove_classnames_and_ids:
                     for tag in self.find_all():
-                        tag.attrs = filter(lambda (key, value): key not in ('class', 'id'),
-                                           tag.attrs)
+                        tag.attrs.pop("class", None)
+                        tag.attrs.pop("id", None)
 
                 # remove inline style-declarations
                 style_def.extract()
@@ -262,7 +280,8 @@ class CompactifyingSoup(BeautifulSoup):
             # verify that media is valid
             valid_media = False
             for med in rule.media:
-                if med.mediaText in self.media or med.mediaText == 'all':
+                mediatext = getattr(med, "mediaText", "")
+                if mediatext in self.media or mediatext == 'all':
                     valid_media = True
                     break
 
