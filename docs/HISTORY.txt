@@ -1,8 +1,8 @@
 Changelog
 =========
 
-0.3 (unreleased)
-----------------
+1.0.0 (2019-12-03)
+------------------
 
 - Python 3 support
   [reinhardt]
