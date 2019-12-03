@@ -4,6 +4,8 @@ Changelog
 0.3 (unreleased)
 ----------------
 
+- Python 3 support
+  [reinhardt]
 - Ported to BeautifulSoup4.
   [ale-rt, reinhardt]
 
