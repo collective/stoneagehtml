@@ -37,25 +37,35 @@ import warnings
 
 
 # regex: selectors
-regex_selector_id = re.compile('((?:\.|#)[\w\-_]+)')
-regex_selector = re.compile('(\w+)?(#([\w\-_]+))?(\.([\w\-_]+))?(\*)?')
+regex_selector_id = re.compile("((?:\.|#)[\w\-_]+)")
+regex_selector = re.compile("(\w+)?(#([\w\-_]+))?(\.([\w\-_]+))?(\*)?")
 
 # regex: compound css-tags
-regex_tags = {'background': re.compile('^ *((?!url)(?P<color>[#\w]+))? *((?P<image>url *\([^\)]+\)) *'+
-                                       '(?P<repeat>(no-)?repeat(-(x|xy|y))?)? *'+
-                                       '(?P<attachment>(scroll|fixed))? *'+
-                                       '(?P<position>(top|bottom|left|center|right| |[-\w%]+)+)?)?'),
-              }
+regex_tags = {
+    "background": re.compile(
+        "^ *((?!url)(?P<color>[#\w]+))? *((?P<image>url *\([^\)]+\)) *"
+        + "(?P<repeat>(no-)?repeat(-(x|xy|y))?)? *"
+        + "(?P<attachment>(scroll|fixed))? *"
+        + "(?P<position>(top|bottom|left|center|right| |[-\w%]+)+)?)?"
+    ),
+}
 
 # default tag black-list based on Google Mail's style filter
-tag_blacklist=['visibility',
-               'font-family',
-               'height',
-               'list-style-image',
-               'top', 'bottom', 'left', 'right',
-               'z-index',
-               'position',
-               'background-image', 'background-repeat', 'background-position']
+tag_blacklist = [
+    "visibility",
+    "font-family",
+    "height",
+    "list-style-image",
+    "top",
+    "bottom",
+    "left",
+    "right",
+    "z-index",
+    "position",
+    "background-image",
+    "background-repeat",
+    "background-position",
+]
 
 cssutils.log.setLevel(logging.CRITICAL)
 
@@ -67,6 +77,7 @@ cssutils.ser.prefs.keepUnknownAtRules = False
 cssutils.ser.prefs.keepUsedNamespaceRulesOnly = True
 cssutils.ser.prefs.resolveVariables = True
 cssutils.ser.prefs.validOnly = True
+
 
 def trim_dictionary(d):
     for key, value in d.copy().items():
@@ -109,16 +120,18 @@ def compactify(text, *args, **kwargs):
 
 
 class CompactifyingSoup(BeautifulSoup):
-    class_prefix = 'c'
-    id_prefix = 'i'
+    class_prefix = "c"
+    id_prefix = "i"
 
-    def compactify(self,
-                   abbreviation_enabled=False,
-                   styles_in_tags=True,
-                   filter_tags=True,
-                   expand_css_properties=True, # experimental
-                   remove_classnames_and_ids=False,
-                   media=(u'screen',)):
+    def compactify(
+        self,
+        abbreviation_enabled=False,
+        styles_in_tags=True,
+        filter_tags=True,
+        expand_css_properties=True,  # experimental
+        remove_classnames_and_ids=False,
+        media=(u"screen",),
+    ):
 
         """
         This function processes an HTML-soup with two purposes:
@@ -190,14 +203,16 @@ class CompactifyingSoup(BeautifulSoup):
         # optimize class identifiers
         count = 0
         for tag in self.find_all():
-            class_def = tag.get('class', None)
-            id_def = tag.get('id', None)
+            class_def = tag.get("class", None)
+            id_def = tag.get("id", None)
             if class_def:
                 # convert class-identifiers to abbreviated versions
                 short_names = []
                 for c in class_def:
                     name = c.strip()
-                    short_name = self.classes.get(name, "%s%s" % (self.class_prefix, count))
+                    short_name = self.classes.get(
+                        name, "%s%s" % (self.class_prefix, count)
+                    )
                     if not name in self.classes:
                         # store abbr. identifier in dictionary
                         self.classes[name] = short_name
@@ -206,14 +221,16 @@ class CompactifyingSoup(BeautifulSoup):
                         short_names.append(short_name)
 
                 if abbreviation_enabled:
-                    tag['class'] = ' '.join(short_names)
+                    tag["class"] = " ".join(short_names)
 
             if id_def:
                 # convert class-identifiers to abbreviated versions
                 short_names = []
-                for c in id_def.split(' '):
+                for c in id_def.split(" "):
                     name = c.strip()
-                    short_name = self.identifiers.get(name, "%s%s" % (self.id_prefix, count))
+                    short_name = self.identifiers.get(
+                        name, "%s%s" % (self.id_prefix, count)
+                    )
                     if not name in self.identifiers:
                         # store abbr. identifier in dictionary
                         self.identifiers[name] = short_name
@@ -222,9 +239,9 @@ class CompactifyingSoup(BeautifulSoup):
                     short_names.append(short_name)
 
                 if abbreviation_enabled:
-                    tag['id'] = ' '.join(short_names)
+                    tag["id"] = " ".join(short_names)
 
-        style_defs = self.find_all('style')
+        style_defs = self.find_all("style")
         for style_def in style_defs:
             # assert non-empty
             if not style_def.contents:
@@ -247,14 +264,14 @@ class CompactifyingSoup(BeautifulSoup):
             # convert identifiers
             if abbreviation_enabled:
                 for name, short_name in self.classes.items():
-                    style = style.replace('.%s ' % name, '.%s ' % short_name)
-                    style = style.replace('.%s.' % name, '.%s.' % short_name)
-                    style = style.replace('.%s,' % name, '.%s,' % short_name)
+                    style = style.replace(".%s " % name, ".%s " % short_name)
+                    style = style.replace(".%s." % name, ".%s." % short_name)
+                    style = style.replace(".%s," % name, ".%s," % short_name)
 
                 for name, short_name in self.identifiers.items():
-                    style = style.replace('#%s ' % name, '#%s ' % short_name)
-                    style = style.replace('#%s.' % name, '#%s.' % short_name)
-                    style = style.replace('#%s,' % name, '#%s,' % short_name)
+                    style = style.replace("#%s " % name, "#%s " % short_name)
+                    style = style.replace("#%s." % name, "#%s." % short_name)
+                    style = style.replace("#%s," % name, "#%s," % short_name)
 
             style_def.contents[0].replace_with(style)
 
@@ -284,7 +301,7 @@ class CompactifyingSoup(BeautifulSoup):
             valid_media = False
             for med in rule.media:
                 mediatext = getattr(med, "mediaText", "")
-                if mediatext in self.media or mediatext == 'all':
+                if mediatext in self.media or mediatext == "all":
                     valid_media = True
                     break
 
@@ -302,8 +319,13 @@ class CompactifyingSoup(BeautifulSoup):
                         continue
 
                     selectors.append(
-                        (match.group(1), trim_dictionary({'class': match.group(5),
-                                                          'id': match.group(3)})))
+                        (
+                            match.group(1),
+                            trim_dictionary(
+                                {"class": match.group(5), "id": match.group(3)}
+                            ),
+                        )
+                    )
 
                 # distribute selector to document
                 self.distributeCSSRule(rule, self, selectors)
@@ -320,7 +342,7 @@ class CompactifyingSoup(BeautifulSoup):
 
         if match:
             for p, v in match.groupdict().items():
-                aggregate_property = '-'.join((prop,p))
+                aggregate_property = "-".join((prop, p))
                 if v is not None:
                     style.setProperty(aggregate_property, v, priority=important)
         else:
@@ -361,20 +383,20 @@ class CompactifyingSoup(BeautifulSoup):
                             i += 1
 
                 # format style-declaration
-                style = rule.style.cssText.replace('\n', ' ').strip(' \n\r')
-                while '  ' in style:
-                    style = style.replace('  ', ' ')
+                style = rule.style.cssText.replace("\n", " ").strip(" \n\r")
+                while "  " in style:
+                    style = style.replace("  ", " ")
 
                 # apply to tags
                 attrs = tag.attrs
                 style_key = ""
                 for key in attrs:
-                    if key.lower() == 'style':
+                    if key.lower() == "style":
                         style_key = key
                         break
 
                 if style_key:
-                    attrs[style_key] = '%s; %s' % (attrs[style_key], style)
+                    attrs[style_key] = "%s; %s" % (attrs[style_key], style)
                     style = None
 
                 if style:
@@ -422,19 +444,23 @@ class CompactifyingSoup(BeautifulSoup):
             add = True
             for match in iterator:
                 s = match.group(1)
-                if s.startswith('.') and s[1:] not in self.classes:
+                if s.startswith(".") and s[1:] not in self.classes:
                     add = False
                     break
-                elif s.startswith('#') and s[1:] not in self.identifiers:
+                elif s.startswith("#") and s[1:] not in self.identifiers:
                     add = False
                     break
 
-            if add: selector_list.appendSelector(selector.selectorText)
+            if add:
+                selector_list.appendSelector(selector.selectorText)
         return selector_list
+
 
 def _test():
     import doctest
+
     doctest.testmod()
+
 
 if __name__ == "__main__":
     _test()
