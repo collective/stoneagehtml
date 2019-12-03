@@ -32,6 +32,7 @@ from bs4 import BeautifulSoup
 import cssutils
 import logging
 import re
+import sys
 import warnings
 
 
@@ -68,7 +69,7 @@ cssutils.ser.prefs.resolveVariables = True
 cssutils.ser.prefs.validOnly = True
 
 def trim_dictionary(d):
-    for key, value in d.items():
+    for key, value in d.copy().items():
         if not value:
             del d[key]
 
@@ -157,8 +158,8 @@ class CompactifyingSoup(BeautifulSoup):
         <head></head>
         <body>
         <div id=\"a\" style=\"margin: 0\">
-        <span class=\"b c\" style=\"padding: 0; background-color: white !important; background-position: bottom left !important; background-image: url(text.gif) !important; background-repeat: no-repeat !important; background-attachment: fixed !important; display: block\">test</span>
-        <div class=\"d\" style=\"background-position: 2px -8px; background-image: url(text.gif); background-repeat: repeat-x\"><!-- nothing here --></div>
+        <span class=\"b c\" style=\"padding: 0; background-color: white !important; background-image: url(text.gif) !important; background-repeat: no-repeat !important; background-attachment: fixed !important; background-position: bottom left !important; display: block\">test</span>
+        <div class=\"d\" style=\"background-image: url(text.gif); background-repeat: repeat-x; background-position: 2px -8px\"><!-- nothing here --></div>
         <span style=\"display: block\">test</span>
         </div>
         </body>
@@ -170,8 +171,8 @@ class CompactifyingSoup(BeautifulSoup):
         <head></head>
         <body>
         <div style=\"margin: 0\">
-        <span style=\"padding: 0; background-color: white !important; background-position: bottom left !important; background-image: url(text.gif) !important; background-repeat: no-repeat !important; background-attachment: fixed !important; display: block\">test</span>
-        <div style=\"background-position: 2px -8px; background-image: url(text.gif); background-repeat: repeat-x\"><!-- nothing here --></div>
+        <span style=\"padding: 0; background-color: white !important; background-image: url(text.gif) !important; background-repeat: no-repeat !important; background-attachment: fixed !important; background-position: bottom left !important; display: block\">test</span>
+        <div style=\"background-image: url(text.gif); background-repeat: repeat-x; background-position: 2px -8px\"><!-- nothing here --></div>
         <span style=\"display: block\">test</span>
         </div>
         </body>
@@ -241,7 +242,7 @@ class CompactifyingSoup(BeautifulSoup):
             del sheet.cssRules[:]
             for fcss in filtered_cssrules:
                 sheet.cssRules.append(fcss)
-            style = sheet.cssText
+            style = sheet.cssText.decode("utf-8")
 
             # convert identifiers
             if abbreviation_enabled:
@@ -271,7 +272,9 @@ class CompactifyingSoup(BeautifulSoup):
                 # remove inline style-declarations
                 style_def.extract()
 
-        return self.encode_contents()
+        if sys.version_info[0] == 2:
+            return self.encode_contents()
+        return self
 
     def distributeCSSDeclaration(self, rule):
         if isinstance(rule, cssutils.css.CSSComment):
@@ -340,7 +343,7 @@ class CompactifyingSoup(BeautifulSoup):
                         prop = rule.style.item(i)
 
                         # check if property is in expand list
-                        if prop in regex_tags.keys():
+                        if prop in regex_tags:
                             self.expandProperty(rule.style, prop)
 
                         i += 1
