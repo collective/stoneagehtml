@@ -1,0 +1,4 @@
+graft stoneagehtml
+graft docs
+include *.rst
+global-exclude *.pyc
