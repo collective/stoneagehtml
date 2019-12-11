@@ -40,4 +40,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=["setuptools", "BeautifulSoup4", "cssutils"],
+    extras_require={
+        "test": ["lxml",]
+    }
 )

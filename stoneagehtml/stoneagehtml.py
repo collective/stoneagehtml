@@ -79,6 +79,54 @@ cssutils.ser.prefs.resolveVariables = True
 cssutils.ser.prefs.validOnly = True
 
 
+IS_PY2 = sys.version_info[0] == 2
+
+
+def safe_text(value, encoding="utf-8"):
+    """Converts a value to text, even if is already a text string.
+
+    Taken from Products.CMFPlone.utils
+
+    >>> test_bytes = u'\u01b5'.encode('utf-8')
+    >>> safe_text('spam') == u'spam'
+    True
+    >>> safe_text(b'spam') == u'spam'
+    True
+    >>> safe_text(u'spam') == u'spam'
+    True
+    >>> safe_text(u'spam'.encode('utf-8')) == u'spam'
+    True
+    >>> safe_text(test_bytes) == u'\u01b5'
+    True
+    >>> safe_text(u'\xc6\xb5'.encode('iso-8859-1')) == u'\u01b5'
+    True
+    >>> safe_text(test_bytes, encoding='ascii') == u'\u01b5'
+    True
+    >>> safe_text(1) == 1
+    True
+    >>> print(safe_text(None))
+    None
+    """
+    if IS_PY2:
+        if isinstance(value, unicode):
+            return value
+        elif isinstance(value, basestring):
+            try:
+                value = unicode(value, encoding)
+            except (UnicodeDecodeError):
+                value = value.decode("utf-8", "replace")
+        return value
+
+    if isinstance(value, str):
+        return value
+    elif isinstance(value, bytes):
+        try:
+            value = str(value, encoding)
+        except (UnicodeDecodeError):
+            value = value.decode("utf-8", "replace")
+    return value
+
+
 def trim_dictionary(d):
     for key, value in d.copy().items():
         if not value:
@@ -165,31 +213,64 @@ class CompactifyingSoup(BeautifulSoup):
         ... </div>
         ... </body>
         ... </html>\"""
-        >>> print(compactify(text, filter_tags=False))
+
+        >>> out_1 = compactify(text, filter_tags=False)
+        >>> print(out_1)
         <BLANKLINE>
         <html>
         <head></head>
         <body>
         <div id=\"a\" style=\"margin: 0\">
-        <span class=\"b c\" style=\"padding: 0; background-color: white !important; background-image: url(text.gif) !important; background-repeat: no-repeat !important; background-attachment: fixed !important; background-position: bottom left !important; display: block\">test</span>
-        <div class=\"d\" style=\"background-image: url(text.gif); background-repeat: repeat-x; background-position: 2px -8px\"><!-- nothing here --></div>
+        <span class=\"b c\"...
+        <div class=\"d\"...
         <span style=\"display: block\">test</span>
         </div>
         </body>
         </html>
 
-        >>> print(compactify(text, filter_tags=False, remove_classnames_and_ids=True))
+        >>> import lxml.html
+
+        Checking styles with non-deterministic order.
+
+        >>> tree_1 = lxml.html.fromstring(out_1)
+
+        Check 1: <span class=\"b c\" style=\"padding: 0; background-color: white !important; background-image: url(text.gif) !important; background-repeat: no-repeat !important; background-attachment: fixed !important; background-position: bottom left !important; display: block\">test</span>
+
+        >>> el_1 = tree_1.xpath("//*[contains(@class, 'b')]")[0]
+        >>> style_1 = el_1.attrib['style']
+        >>> assert('padding: 0' in style_1)
+        >>> assert('background-color: white !important' in style_1)
+        >>> assert('background-image: url(text.gif) !important' in style_1)
+        >>> assert('background-repeat: no-repeat !important' in style_1)
+        >>> assert('background-attachment: fixed !important' in style_1)
+        >>> assert('background-position: bottom left !important' in style_1)
+        >>> assert('display: block' in style_1)
+
+        Check 2: <div class=\"d\" style=\"background-image: url(text.gif); background-repeat: repeat-x; background-position: 2px -8px\"><!-- nothing here --></div>
+
+        >>> el_2 = tree_1.xpath("//*[contains(@class, 'd')]")[0]
+        >>> style_2 = el_2.attrib['style']
+        >>> assert('background-image: url(text.gif)' in style_2)
+        >>> assert('background-repeat: repeat-x' in style_2)
+        >>> assert('background-position: 2px -8px' in style_2)
+
+
+        Compactify with different options
+
+        >>> out_2 = compactify(text, filter_tags=False, remove_classnames_and_ids=True)
+        >>> print(out_2)
         <BLANKLINE>
         <html>
         <head></head>
         <body>
         <div style=\"margin: 0\">
-        <span style=\"padding: 0; background-color: white !important; background-image: url(text.gif) !important; background-repeat: no-repeat !important; background-attachment: fixed !important; background-position: bottom left !important; display: block\">test</span>
-        <div style=\"background-image: url(text.gif); background-repeat: repeat-x; background-position: 2px -8px\"><!-- nothing here --></div>
+        <span ...
+        <div ...
         <span style=\"display: block\">test</span>
         </div>
         </body>
         </html>
+
         """
 
         # save arguments
@@ -251,6 +332,7 @@ class CompactifyingSoup(BeautifulSoup):
 
             # remove unused rules
             sheet = cssutils.parseString(style)
+
             ### INFO: workaround of bug:
             ### http://code.google.com/p/cssutils/issues/detail?id=39
             ### TODO: after bugfix restore to easier to read:
@@ -259,7 +341,7 @@ class CompactifyingSoup(BeautifulSoup):
             del sheet.cssRules[:]
             for fcss in filtered_cssrules:
                 sheet.cssRules.append(fcss)
-            style = sheet.cssText.decode("utf-8")
+            style = safe_text(sheet.cssText)
 
             # convert identifiers
             if abbreviation_enabled:
@@ -289,9 +371,9 @@ class CompactifyingSoup(BeautifulSoup):
                 # remove inline style-declarations
                 style_def.extract()
 
-        if sys.version_info[0] == 2:
+        if IS_PY2:
             return self.encode_contents()
-        return self
+        return str(self)
 
     def distributeCSSDeclaration(self, rule):
         if isinstance(rule, cssutils.css.CSSComment):
@@ -459,7 +541,9 @@ class CompactifyingSoup(BeautifulSoup):
 def _test():
     import doctest
 
-    doctest.testmod()
+    doctest.testmod(
+        optionflags=doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE, raise_on_error=True
+    )
 
 
 if __name__ == "__main__":
