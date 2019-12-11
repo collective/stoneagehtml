@@ -1,11 +1,12 @@
 Changelog
 =========
 
-1.0.0 (2019-12-03)
+1.0.0 (unreleased)
 ------------------
 
 - Python 3 support
   [reinhardt]
+
 - Ported to BeautifulSoup4.
   [ale-rt, reinhardt]
 

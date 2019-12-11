@@ -3,13 +3,18 @@ import os
 
 version = "1.0.0"
 
+
+long_description = '\n\n'.join([
+    open('README.rst').read(),
+    open('CHANGES.rst').read(),
+])
+
+
 setup(
     name="StoneageHTML",
     version=version,
     description="Stone-Age HTML Filter: prepare documents for e-mail distribution",
-    long_description=open("README.txt").read()
-    + "\n"
-    + open(os.path.join("docs", "HISTORY.txt")).read(),
+    long_description=long_description,
     # Get more strings from http://pypi.python.org/pypi?:action=list_classifiers
     classifiers=[
         "Development Status :: 4 - Beta",
