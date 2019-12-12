@@ -4,8 +4,11 @@ Changelog
 1.0.0 (unreleased)
 ------------------
 
+- Adding tox test environment.
+  [thet]
+
 - Python 3 support
-  [reinhardt]
+  [reinhardt, thet]
 
 - Ported to BeautifulSoup4.
   [ale-rt, reinhardt]

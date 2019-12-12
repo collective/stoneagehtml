@@ -37,16 +37,16 @@ import warnings
 
 
 # regex: selectors
-regex_selector_id = re.compile("((?:\.|#)[\w\-_]+)")
-regex_selector = re.compile("(\w+)?(#([\w\-_]+))?(\.([\w\-_]+))?(\*)?")
+regex_selector_id = re.compile(r"((?:\.|#)[\w\-_]+)")
+regex_selector = re.compile(r"(\w+)?(#([\w\-_]+))?(\.([\w\-_]+))?(\*)?")
 
 # regex: compound css-tags
 regex_tags = {
     "background": re.compile(
-        "^ *((?!url)(?P<color>[#\w]+))? *((?P<image>url *\([^\)]+\)) *"
-        + "(?P<repeat>(no-)?repeat(-(x|xy|y))?)? *"
-        + "(?P<attachment>(scroll|fixed))? *"
-        + "(?P<position>(top|bottom|left|center|right| |[-\w%]+)+)?)?"
+        r"^ *((?!url)(?P<color>[#\w]+))? *((?P<image>url *\([^\)]+\)) *"
+        + r"(?P<repeat>(no-)?repeat(-(x|xy|y))?)? *"
+        + r"(?P<attachment>(scroll|fixed))? *"
+        + r"(?P<position>(top|bottom|left|center|right| |[-\w%]+)+)?)?"
     ),
 }
 
